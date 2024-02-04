@@ -27,7 +27,12 @@ def set_input_tensor(interpreter, image):
     """Set the input tensor."""
     input_tensor_index = interpreter.get_input_details()[0]['index']
     interpreter.tensor(input_tensor_index)()[0] = image
-
+  
+def get_output_tensor(interpreter, index):
+    """Return the output tensor at the given index."""
+    output = interpreter.get_tensor(interpreter.get_output_details()[index]['index'])
+    return np.squeeze(output)
+  
 def recognize_text(image_path, interpreter):
     """Run text recognition on the input image."""
     input_size = (28, 28)  # Replace with the input size expected by your model
