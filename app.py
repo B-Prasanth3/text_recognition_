@@ -9,13 +9,15 @@ model_path = "model.tflite"
 
 def preprocess_image(image_path, input_size):
     """Preprocess the input image to feed to the TFLite model"""
-    img = Image.open(image_path).convert('RGB')
+    img = Image.open(image_path).convert('L')  # Open in grayscale mode
     img = img.resize(input_size, Image.ANTIALIAS)
     img = np.array(img)
+    if len(img.shape) == 3 and img.shape[2] == 3:  # Check for 3 color channels
+        img = tf.image.rgb_to_grayscale(img)  # Convert to grayscale if needed
     img = tf.image.convert_image_dtype(img, dtype=tf.uint8)
-    img = tf.expand_dims(img, axis=0)
+    img = img[..., tf.newaxis]  # Add a new axis for the channel dimension
     return img
-
+    
 def set_input_tensor(interpreter, image):
     """Set the input tensor."""
     input_tensor_index = interpreter.get_input_details()[0]['index']
