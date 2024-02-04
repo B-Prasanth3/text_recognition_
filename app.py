@@ -5,6 +5,7 @@ import numpy as np
 from PIL import Image
 import cv2
 
+
 # Path to your TensorFlow Lite model
 model_path = "model.tflite"
 
