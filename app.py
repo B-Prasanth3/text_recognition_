@@ -28,7 +28,7 @@ def get_output_tensor(interpreter, index):
 
 def recognize_text(image_path, interpreter):
     """Run text recognition on the input image."""
-    input_size = (your_width, your_height)  # Replace with the input size expected by your model
+    input_size = (28, 28)  # Replace with the input size expected by your model
     image = preprocess_image(image_path, input_size)
 
     # Set the input tensor
