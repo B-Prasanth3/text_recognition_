@@ -33,26 +33,9 @@ def get_output_tensor(interpreter, index):
     output = interpreter.get_tensor(interpreter.get_output_details()[index]['index'])
     return np.squeeze(output)
   
-def recognize_text(image_path, interpreter):
+def recognize_text(image_path, interpreter, window_size=(28, 28), step_size=10):
     """Run text recognition on the input image."""
-    input_size = (28, 28)  # Replace with the input size expected by your model
-    image = preprocess_image(image_path, input_size)
-
-    # Set the input tensor
-    set_input_tensor(interpreter, image)
-
-    # Run inference
-    interpreter.invoke()
-
-    # Get the output tensor
-    output_tensor = get_output_tensor(interpreter, 0)
-
-    # Find the index of the most probable class
-    index = np.argmax(output_tensor)
-
-    # Map the index to the corresponding character
-    predicted_character = decode_index2numletter[index]
-     # Sliding window approach
+    image = cv2.imread(image_path)  # Use OpenCV for image loading
     predicted_text = ""
     image_height, image_width = image.shape[:2]
     for y in range(0, image_height - window_size[0], step_size):
@@ -61,8 +44,7 @@ def recognize_text(image_path, interpreter):
             character = recognize_character(window, interpreter)
             predicted_text += character
 
-    return predicted_character
-
+    return predicted_text
 
 # Input Fields
 uploaded_file = st.file_uploader("Upload an Image", type=["jpg", "png", "jpeg"])
@@ -78,7 +60,10 @@ if uploaded_file is not None:
     interpreter.allocate_tensors()
 
     # Run text recognition and get the result
-    predicted_character = recognize_text(path, interpreter)
+    predicted_text = recognize_text(path, interpreter)
+
+    # Display the recognition result
+    st.write("Recognized Text:", predicted_text)
 
     # Display the recognition result
     st.write("Predicted Characters:", predicted_character)
