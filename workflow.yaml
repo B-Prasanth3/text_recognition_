@@ -1,3 +1,7 @@
+on:
+  push:
+    branches: B-Prasanth3/text_recognition_/main
+    
 - name: Install dependencies
   run: |
     python -m pip install --upgrade pip
