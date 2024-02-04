@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 
 # Path to your TensorFlow Lite model
-model_path = "D:\ocrtextprj\model.tflite"
+model_path = "model.tflite"
 
 def preprocess_image(image_path, input_size):
     """Preprocess the input image to feed to the TFLite model"""
