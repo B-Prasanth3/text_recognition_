@@ -52,6 +52,14 @@ def recognize_text(image_path, interpreter):
 
     # Map the index to the corresponding character
     predicted_character = decode_index2numletter[index]
+     # Sliding window approach
+    predicted_text = ""
+    image_height, image_width = image.shape[:2]
+    for y in range(0, image_height - window_size[0], step_size):
+        for x in range(0, image_width - window_size[1], step_size):
+            window = image[y:y+window_size[0], x:x+window_size[1]]
+            character = recognize_character(window, interpreter)
+            predicted_text += character
 
     return predicted_character
 
