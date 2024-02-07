@@ -5,14 +5,13 @@ import numpy as np
 from PIL import Image
 import cv2
 
-
 # Path to your TensorFlow Lite model
 model_path = "model.tflite"
 
 decode_index2numletter = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
                           'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
                           'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-                          'U', 'V', 'W', 'X', 'Y', 'Z'];
+                          'U', 'V', 'W', 'X', 'Y', 'Z']
 
 def preprocess_image(image_path, input_size):
     """Preprocess the input image to feed to the TFLite model"""
@@ -24,26 +23,33 @@ def preprocess_image(image_path, input_size):
     img = tf.image.convert_image_dtype(img, dtype=tf.uint8)
     img = img[..., tf.newaxis]  # Add a new axis for the channel dimension
     return img
-    
+
 def set_input_tensor(interpreter, image):
     """Set the input tensor."""
     input_tensor_index = interpreter.get_input_details()[0]['index']
     interpreter.tensor(input_tensor_index)()[0] = image
-  
+
 def get_output_tensor(interpreter, index):
     """Return the output tensor at the given index."""
     output = interpreter.get_tensor(interpreter.get_output_details()[index]['index'])
     return np.squeeze(output)
-  
+
+def recognize_character(window, interpreter):
+    """Recognize a character using the TFLite model."""
+    # Your character recognition logic here
+    # Replace this with your actual logic to recognize a character
+    return 'A'
+
 def recognize_text(image_path, interpreter, window_size=(28, 28), step_size=10):
     """Run text recognition on the input image."""
-    image = cv2.imread(image_path)  # Use OpenCV for image loading
+    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)  # Use OpenCV for image loading
     predicted_text = ""
     image_height, image_width = image.shape[:2]
+
     for y in range(0, image_height - window_size[0], step_size):
         for x in range(0, image_width - window_size[1], step_size):
             window = image[y:y+window_size[0], x:x+window_size[1]]
-            character = recognize_text(window, interpreter)
+            character = recognize_character(window, interpreter)
             predicted_text += character
 
     return predicted_text
@@ -68,5 +74,4 @@ if uploaded_file is not None:
     st.write("Recognized Text:", predicted_text)
 
     # Display the recognition result
-    st.write("Predicted Characters:", predicted_character)
-
+    st.write("Predicted Characters:", predicted_text)
