@@ -30,7 +30,17 @@ def preprocess_image(image_path, input_size):
 def set_input_tensor(interpreter, image):
     """Set the input tensor."""
     input_tensor_index = interpreter.get_input_details()[0]['index']
-    interpreter.tensor(input_tensor_index)()[0] = image
+    input_tensor_shape = interpreter.get_input_details()[0]['shape']
+
+    if len(input_tensor_shape) == 4:
+        # For models with 4D input (batch, height, width, channels)
+        interpreter.tensor(input_tensor_index)()[0] = image
+    elif len(input_tensor_shape) == 3:
+        # For models with 3D input (height, width, channels)
+        interpreter.tensor(input_tensor_index)()[0, :, :, :] = image
+    else:
+        # Handle other cases based on your model's input requirements
+        raise ValueError("Unsupported input tensor shape")
 
 def recognize_text(image_path, interpreter, window_size=(31, 200), step_size=10):
     """Run text recognition on the input image."""
