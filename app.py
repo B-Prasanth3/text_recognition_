@@ -37,7 +37,7 @@ def set_input_tensor(interpreter, image):
         interpreter.tensor(input_tensor_index)()[0] = image
     elif len(input_tensor_shape) == 3:
         # For models with 3D input (height, width, channels)
-        interpreter.tensor(input_tensor_index)()[0, :, :, :] = image
+        interpreter.tensor(input_tensor_index)()[0, :, :, 0] = image  # Assuming single-channel image
     else:
         # Handle other cases based on your model's input requirements
         raise ValueError("Unsupported input tensor shape")
