@@ -43,7 +43,7 @@ def recognize_text(image_path, interpreter, window_size=(28, 28), step_size=10):
     for y in range(0, image_height - window_size[0], step_size):
         for x in range(0, image_width - window_size[1], step_size):
             window = image[y:y+window_size[0], x:x+window_size[1]]
-            character = recognize_character(window, interpreter)
+            character = recognize_text(window, interpreter)
             predicted_text += character
 
     return predicted_text
