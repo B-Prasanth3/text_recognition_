@@ -65,19 +65,20 @@ def recognize_character(window, interpreter):
 
     return predicted_character
 
-def recognize_text(image_path, interpreter, window_size=(28, 28), step_size=10):
+def recognize_text(image_path, interpreter, window_size=(31, 200), step_size=10):
     """Run text recognition on the input image."""
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)  # Use OpenCV for image loading
+    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
     predicted_text = ""
     image_height, image_width = image.shape[:2]
 
     for y in range(0, image_height - window_size[0], step_size):
         for x in range(0, image_width - window_size[1], step_size):
-            window = image[y:y+window_size[0], x:x+window_size[1]]
+            window = image[y:y + window_size[0], x:x + window_size[1]]
             character = recognize_character(window, interpreter)
             predicted_text += character
 
     return predicted_text
+
 
 # Input Fields
 uploaded_file = st.file_uploader("Upload an Image", type=["jpg", "png", "jpeg"])
