@@ -36,9 +36,26 @@ def get_output_tensor(interpreter, index):
 
 def recognize_character(window, interpreter):
     """Recognize a character using the TFLite model."""
-    # Your character recognition logic here
-    # Replace this with your actual logic to recognize a character
-    return 'A'
+    # Preprocess the window
+    window = cv2.resize(window, (28, 28))
+    window = np.expand_dims(window, axis=-1)
+    window = np.expand_dims(window, axis=0)
+    window = window / 255.0  # Normalize to [0, 1]
+
+    # Set input tensor
+    set_input_tensor(interpreter, window)
+
+    # Run inference
+    interpreter.invoke()
+
+    # Get the output tensor
+    output = get_output_tensor(interpreter, 0)
+
+    # Convert the output to the predicted character
+    predicted_index = np.argmax(output)
+    predicted_character = decode_index2numletter[predicted_index]
+
+    return predicted_character
 
 def recognize_text(image_path, interpreter, window_size=(28, 28), step_size=10):
     """Run text recognition on the input image."""
