@@ -90,15 +90,15 @@ if uploaded_file is not None:
 
     path = os.path.join("/tmp", uploaded_file.name)
 
-    # Load the TFLite model
+     # Load the TFLite model
     interpreter = tf.lite.Interpreter(model_path=model_path)
     interpreter.allocate_tensors()
 
     # Run text recognition and get the result
     predicted_text = recognize_text(path, interpreter)
 
-    # Display the recognition result
-    st.write("Recognized Text:", predicted_text)
+    # Explicitly run decoder on the output of the model
+    decoded_text = run_decoder_on_output(predicted_text)
 
     # Display the recognition result
-    st.write("Predicted Characters:", predicted_text)
+    st.write("Recognized Text:", decoded_text)
