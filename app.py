@@ -34,10 +34,10 @@ def set_input_tensor(interpreter, image):
 
     if len(input_tensor_shape) == 4:
         # For models with 4D input (batch, height, width, channels)
-        interpreter.set_tensor(input_tensor_index, image)
+        interpreter.set_tensor(input_tensor_index, tf.convert_to_tensor(image, dtype=tf.float32))
     elif len(input_tensor_shape) == 3:
         # For models with 3D input (height, width, channels)
-        interpreter.set_tensor(input_tensor_index, image.reshape(input_tensor_shape))
+        interpreter.set_tensor(input_tensor_index, tf.convert_to_tensor(image.reshape(input_tensor_shape), dtype=tf.float32))
     else:
         # Handle other cases based on your model's input requirements
         raise ValueError("Unsupported input tensor shape")
