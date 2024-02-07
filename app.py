@@ -31,10 +31,10 @@ def set_input_tensor(interpreter, image):
 
     if input_tensor_shape[0] == 1:
         # For models with batch size 1, directly set the input tensor
-        interpreter.set_tensor(input_tensor_index, image)
+        interpreter.set_tensor(input_tensor_index, tf.convert_to_tensor(image, dtype=tf.float32))
     else:
-        # For models with batch size greater than 1, reshape the input tensor
-        interpreter.tensor(input_tensor_index)()[0, :, :, :] = image
+        # For models with batch size greater than 1, reshape and set the input tensor
+        interpreter.tensor(input_tensor_index)()[0, :, :, :] = tf.convert_to_tensor(image, dtype=tf.float32)
 
 
 def get_output_tensor(interpreter, index):
