@@ -13,6 +13,12 @@ decode_index2numletter = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
                           'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
                           'U', 'V', 'W', 'X', 'Y', 'Z']
 
+def run_decoder_on_output(output_text_indices):
+    # Placeholder implementation assuming output_text_indices is a list of character indices
+    decoded_text = ''.join([decode_index2numletter[idx] for idx in output_text_indices])
+    return decoded_text
+
+
 def preprocess_image(image_path, input_size):
     """Preprocess the input image to feed to the TFLite model"""
     img = Image.open(image_path).convert('L')  # Open in grayscale mode
