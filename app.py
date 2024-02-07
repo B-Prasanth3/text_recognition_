@@ -27,7 +27,15 @@ def preprocess_image(image_path, input_size):
 def set_input_tensor(interpreter, image):
     """Set the input tensor."""
     input_tensor_index = interpreter.get_input_details()[0]['index']
-    interpreter.tensor(input_tensor_index)()[0] = image
+    input_tensor_shape = interpreter.get_input_details()[0]['shape']
+
+    if input_tensor_shape[0] == 1:
+        # For models with batch size 1, directly set the input tensor
+        interpreter.set_tensor(input_tensor_index, image)
+    else:
+        # For models with batch size greater than 1, reshape the input tensor
+        interpreter.tensor(input_tensor_index)()[0, :, :, :] = image
+
 
 def get_output_tensor(interpreter, index):
     """Return the output tensor at the given index."""
