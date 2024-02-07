@@ -6,7 +6,7 @@ from PIL import Image
 import cv2
 
 # Path to your TensorFlow Lite model
-model_path = "model.tflite"
+model_path = "2.tflite"
 
 decode_index2numletter = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
                           'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
