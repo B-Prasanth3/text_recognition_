@@ -74,6 +74,7 @@ def recognize_text(image_path, interpreter, window_size=(31, 200), step_size=10)
     for y in range(0, image_height - window_size[0], step_size):
         for x in range(0, image_width - window_size[1], step_size):
             window = image[y:y + window_size[0], x:x + window_size[1]]
+            window = cv2.resize(window, (28, 28))  # Resize the window to match the model input size
             character = recognize_character(window, interpreter)
             predicted_text += character
 
