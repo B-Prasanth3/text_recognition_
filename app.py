@@ -34,14 +34,14 @@ def set_input_tensor(interpreter, image):
 
     if len(input_tensor_shape) == 4:
         # For models with 4D input (batch, height, width, channels)
-        interpreter.tensor(input_tensor_index)()[0] = image
+        interpreter.set_tensor(input_tensor_index, image)
     elif len(input_tensor_shape) == 3:
         # For models with 3D input (height, width, channels)
-        interpreter.tensor(input_tensor_index)()[0, :, :, 0] = image  # Assuming single-channel image
+        interpreter.set_tensor(input_tensor_index, image.reshape(input_tensor_shape))
     else:
         # Handle other cases based on your model's input requirements
         raise ValueError("Unsupported input tensor shape")
-
+      
 def recognize_text(image_path, interpreter, window_size=(31, 200), step_size=10):
     """Run text recognition on the input image."""
     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
