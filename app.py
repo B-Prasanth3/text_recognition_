@@ -48,7 +48,5 @@ def preprocess_image(image):
     input_image = np.expand_dims(image_array, axis=0).astype(np.float32)
     return input_image
 
-    return input_image
-
 if __name__ == "__main__":
     main()
