@@ -5,26 +5,39 @@ import easyocr
 def main():
     st.title("Text Recognition App")
 
+    # Add language selection (use st.selectbox/st.radio etc.)
+    recognition_language = st.selectbox("Select Recognition Language", ["English", "French", "Spanish"])
+
     uploaded_file = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
-        image = Image.open(uploaded_file)
-        st.image(image, caption="Uploaded Image", use_column_width=True)
-        st.write("")
-        st.write("Recognizing text...")
+        try:
+            image = Image.open(uploaded_file)
+            st.image(image, caption="Uploaded Image", use_column_width=True)
 
-        # Perform text recognition on the image using easyocr
-        result = recognize_text(image)
+            # Downscale for larger images
+            if image.width > 1000:
+                width = 1000
+                height = int(image.height * width / image.width)
+                image = image.resize((width, height))
 
-        st.success(f"Text Recognition Result: {result}")
+            st.write("Recognizing text...")
 
-def recognize_text(image):
-    # Use easyocr reader
-    reader = easyocr.Reader(['en'])
-    # Extract text from the image
-    result = reader.readtext(np.array(image))
+            # Preprocess if needed (e.g., grayscale conversion)
+            # ...
 
-    return result
+            reader = easyocr.Reader([recognition_language])
+            result = reader.readtext(np.array(image))
+
+            download_button = st.button("Download Text")
+            if download_button:
+                with open("recognized_text.txt", "w") as f:
+                    f.write(result)
+                st.success("Text downloaded as recognized_text.txt")
+
+            st.success(f"Text Recognition Result: {result}")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
 
 if __name__ == "__main__":
     main()
