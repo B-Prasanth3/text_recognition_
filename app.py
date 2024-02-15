@@ -43,6 +43,13 @@ def recognize_text(image):
     interpreter.set_tensor(input_details[0]['index'], input_image)
     interpreter.invoke()
 
+     # Get output details
+    output_details = interpreter.get_output_details()
+
+    # Get the expected output shape
+    output_shape = output_details[0]['shape']
+    print("Expected Output Shape:", output_shape)
+
     # Get the output
     output_text = interpreter.get_tensor(output_details[0]['index'])
 
