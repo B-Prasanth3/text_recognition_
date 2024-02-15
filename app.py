@@ -4,7 +4,7 @@ from PIL import Image
 import numpy as np
 
 # Load the TensorFlow Lite model
-model_path = "model.tflite"
+model_path = "2.tflite"
 interpreter = tf.lite.Interpreter(model_path=model_path)
 interpreter.allocate_tensors()
 
