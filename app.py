@@ -39,11 +39,14 @@ def recognize_text(image):
     # Preprocess the input image
     input_image = preprocess_image(image)
 
+    # Print actual input shape
+    print("Actual Input Shape:", input_image.shape)
+
     # Run inference
     interpreter.set_tensor(input_details[0]['index'], input_image)
     interpreter.invoke()
 
-     # Get output details
+    # Get output details
     output_details = interpreter.get_output_details()
 
     # Get the expected output shape
@@ -69,6 +72,7 @@ def preprocess_image(image):
     # Expand dimension for batch size
     input_image = np.expand_dims(image_array, axis=0).astype(np.float32)
     return input_image
+
 
 
 
