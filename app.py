@@ -42,11 +42,11 @@ def recognize_text(image):
     return output_text
 
 def preprocess_image(image):
-    # Replace this with your actual image preprocessing logic
-    # Convert image to a format compatible with the model input
-    image = image.resize((224, 224))
+    input_shape = input_details[0]['shape'][1:3]
+    image = image.resize(input_shape)
     image_array = np.array(image) / 255.0
     input_image = np.expand_dims(image_array, axis=0).astype(np.float32)
+    return input_image
 
     return input_image
 
