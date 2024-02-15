@@ -1,83 +1,54 @@
 import streamlit as st
 import tensorflow as tf
-import os
-import numpy as np
 from PIL import Image
-import cv2
+import numpy as np
 
-# Path to your TensorFlow Lite model
-model_path = "2.tflite"
+# Load the TensorFlow Lite model
+model_path = "model.tflite"
+interpreter = tf.lite.Interpreter(model_path=model_path)
+interpreter.allocate_tensors()
 
-decode_index2numletter = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-                          'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-                          'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-                          'U', 'V', 'W', 'X', 'Y', 'Z']
+# Get input and output details
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
 
-def run_decoder_on_output(output_text_indices):
-    # Placeholder implementation assuming output_text_indices is a list of character indices
-    decoded_text = ''.join([decode_index2numletter[idx] for idx in output_text_indices])
-    return decoded_text
+def main():
+    st.title("Text Recognition App")
 
-def preprocess_image(image_path, input_size):
-    """Preprocess the input image to feed to the TFLite model"""
-    img = Image.open(image_path).convert('L')  # Open in grayscale mode
-    img = img.resize(input_size, Image.ANTIALIAS)
-    img = np.array(img)
-    img = tf.image.convert_image_dtype(img, dtype=tf.float32)
-    img = img[..., tf.newaxis]  # Add a new axis for the channel dimension
-    return img
+    uploaded_file = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
 
-def set_input_tensor(interpreter, image):
-    """Set the input tensor."""
-    input_tensor_index = interpreter.get_input_details()[0]['index']
-    input_tensor_shape = interpreter.get_input_details()[0]['shape']
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file)
+        st.image(image, caption="Uploaded Image", use_column_width=True)
+        st.write("")
+        st.write("Classifying...")
 
-    if len(input_tensor_shape) == 4:
-        # For models with 4D input (batch, height, width, channels)
-        interpreter.set_tensor(input_tensor_index, tf.convert_to_tensor(image, dtype=tf.float32))
-    elif len(input_tensor_shape) == 3:
-        # For models with 3D input (height, width, channels)
-        interpreter.set_tensor(input_tensor_index, tf.convert_to_tensor(image.reshape(input_tensor_shape), dtype=tf.float32))
-    else:
-        # Handle other cases based on your model's input requirements
-        raise ValueError("Unsupported input tensor shape")
-      
-def recognize_text(image_path, interpreter, window_size=(31, 200), step_size=10):
-    """Run text recognition on the input image."""
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    predicted_text = ""
-    image_height, image_width = image.shape[:2]
+        # Perform text recognition on the image using the loaded model
+        result = recognize_text(image)
 
-    for y in range(0, image_height - window_size[0], step_size):
-        for x in range(0, image_width - window_size[1], step_size):
-            window = image[y:y + window_size[0], x:x + window_size[1]]
-            window = cv2.resize(window, (128, 64))  # Assume KerasOCR expects this size
-            window = window / 255.0  # Normalize to [0, 1]
-            set_input_tensor(interpreter, window)
-            interpreter.invoke()
+        st.success(f"Text Recognition Result: {result}")
 
-            # Assuming you have a decoder output, adjust the following line
-            output_indices = [np.argmax(interpreter.tensor(i)()[0]) for i in interpreter.get_output_details()]
-            character = run_decoder_on_output(output_indices)
-            predicted_text += character
+def recognize_text(image):
+    # Preprocess the input image
+    input_image = preprocess_image(image)
 
-    return predicted_text
+    # Run inference
+    interpreter.set_tensor(input_details[0]['index'], input_image)
+    interpreter.invoke()
 
-# Input Fields
-uploaded_file = st.file_uploader("Upload an Image", type=["jpg", "png", "jpeg"])
+    # Get the output
+    output_text = interpreter.get_tensor(output_details[0]['index'])
 
-if uploaded_file is not None:
-    with open(os.path.join("/tmp", uploaded_file.name), "wb") as f:
-        f.write(uploaded_file.getbuffer())
+    return output_text
 
-    path = os.path.join("/tmp", uploaded_file.name)
+def preprocess_image(image):
+    # Replace this with your actual image preprocessing logic
+    # Convert image to a format compatible with the model input
+    image = image.resize((224, 224))
+    image_array = np.array(image) / 255.0
+    input_image = np.expand_dims(image_array, axis=0).astype(np.float32)
 
-    # Load the TFLite model
-    interpreter = tf.lite.Interpreter(model_path=model_path)
-    interpreter.allocate_tensors()
+    return input_image
 
-    # Run text recognition and get the result
-    predicted_text = recognize_text(path, interpreter)
-
-    # Display the recognition result
-    st.write("Recognized Text:", predicted_text)
+if __name__ == "__main__":
+    main()
