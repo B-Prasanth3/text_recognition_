@@ -1,16 +1,6 @@
 import streamlit as st
-import tensorflow as tf
 from PIL import Image
-import numpy as np
-
-# Load the TensorFlow Lite model
-model_path = "2.tflite"
-interpreter = tf.lite.Interpreter(model_path=model_path)
-interpreter.allocate_tensors()
-
-# Get input and output details
-input_details = interpreter.get_input_details()
-output_details = interpreter.get_output_details()
+import easyocr
 
 def main():
     st.title("Text Recognition App")
@@ -23,38 +13,18 @@ def main():
         st.write("")
         st.write("Recognizing text...")
 
-        # Perform text recognition on the image using the loaded model
+        # Perform text recognition on the image using easyocr
         result = recognize_text(image)
 
         st.success(f"Text Recognition Result: {result}")
 
 def recognize_text(image):
-    # Preprocess the input image
-    input_image = preprocess_image(image)
+    # Use easyocr reader
+    reader = easyocr.Reader(['en'])
+    # Extract text from the image
+    result = reader.readtext(np.array(image))
 
-    # Run inference
-    interpreter.set_tensor(input_details[0]['index'], input_image)
-    interpreter.invoke()
-
-    # Get the output
-    output_text = interpreter.get_tensor(output_details[0]['index'])
-
-    return output_text
-
-def preprocess_image(image):
-    # Get expected dimensions
-    input_shape = input_details[0]['shape'][1:3]
-    width, height = input_shape
-    
-    # Resize the image while preserving aspect ratio
-    image = image.resize((width, height), Image.ANTIALIAS)
-    
-    # Convert to NumPy array and normalize
-    image_array = np.array(image) / 255.0
-    
-    # Expand dimension for batch size
-    input_image = np.expand_dims(image_array, axis=0).astype(np.float32)
-    return input_image
+    return result
 
 if __name__ == "__main__":
     main()
