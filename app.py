@@ -1,12 +1,15 @@
 import streamlit as st
-import tensorflow as tf
 from PIL import Image
 import numpy as np
+from keras_ocr.recognition import Recognizer
 
 # Load the TensorFlow Lite model
 model_path = "2.tflite"
 interpreter = tf.lite.Interpreter(model_path=model_path)
 interpreter.allocate_tensors()
+
+# Load the Keras-OCR recognizer
+recognizer = Recognizer(weights="kurapan")
 
 # Get input and output details
 input_details = interpreter.get_input_details()
@@ -21,7 +24,7 @@ def main():
         image = Image.open(uploaded_file)
         st.image(image, caption="Uploaded Image", use_column_width=True)
         st.write("")
-        st.write("Classifying...")
+        st.write("Recognizing text...")
 
         # Perform text recognition on the image using the loaded model
         result = recognize_text(image)
@@ -46,17 +49,10 @@ def recognize_text(image):
     interpreter.set_tensor(input_details[0]['index'], input_image)
     interpreter.invoke()
 
-    # Get output details
-    output_details = interpreter.get_output_details()
+    # Get the predicted text using Keras-OCR recognizer
+    result = recognizer.recognize(image)
 
-    # Get the expected output shape
-    output_shape = output_details[0]['shape']
-    print("Expected Output Shape:", output_shape)
-
-    # Get the output
-    output_text = interpreter.get_tensor(output_details[0]['index'])
-
-    return output_text
+    return result
 
 def preprocess_image(image):
     # Get expected dimensions
@@ -72,10 +68,6 @@ def preprocess_image(image):
     # Expand dimension for batch size
     input_image = np.expand_dims(image_array, axis=0).astype(np.float32)
     return input_image
-
-
-
-
 
 if __name__ == "__main__":
     main()
