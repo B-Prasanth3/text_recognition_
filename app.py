@@ -29,6 +29,13 @@ def main():
         st.success(f"Text Recognition Result: {result}")
 
 def recognize_text(image):
+    # Get input details
+    input_details = interpreter.get_input_details()
+
+    # Print expected input shape
+    input_shape = input_details[0]['shape']
+    print("Expected Input Shape:", input_shape)
+
     # Preprocess the input image
     input_image = preprocess_image(image)
 
