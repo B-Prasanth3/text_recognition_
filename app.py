@@ -56,11 +56,20 @@ def recognize_text(image):
     return output_text
 
 def preprocess_image(image):
-    input_shape = input_details[0]['shape']  # Get full input shape
-    image = image.resize(input_shape[1:3])  # Resize to expected height and width
+    # Get expected dimensions
+    input_shape = input_details[0]['shape'][1:3]
+    width, height = input_shape
+    
+    # Resize the image while preserving aspect ratio
+    image = image.resize((width, height), Image.ANTIALIAS)
+    
+    # Convert to NumPy array and normalize
     image_array = np.array(image) / 255.0
-    input_image = np.expand_dims(image_array, axis=0).astype(np.float32)  # Add batch dimension
+    
+    # Expand dimension for batch size
+    input_image = np.expand_dims(image_array, axis=0).astype(np.float32)
     return input_image
+
 
 
 
