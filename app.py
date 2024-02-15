@@ -56,10 +56,13 @@ def recognize_text(image):
     return output_text
 
 def preprocess_image(image):
-    image = image.resize((31, 31))
+    # Resize within preprocessing, potentially preserving aspect ratio
+    input_shape = input_details[0]['shape'][1:3]
+    image = image.resize(input_shape, Image.ANTIALIAS)  # Use ANTIALIAS for resizing quality
     image_array = np.array(image) / 255.0
-    input_image = np.expand_dims(image_array, axis=0).astype(np.float32)
+    input_image = image_array.astype(np.float32)
     return input_image
+
 
 if __name__ == "__main__":
     main()
